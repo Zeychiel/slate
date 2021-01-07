@@ -288,7 +288,7 @@
     </script>
   </head>
 
-  <body class="index" data-languages="[&quot;shell&quot;,&quot;ruby&quot;,&quot;python&quot;,&quot;javascript&quot;]">
+  <body class="index" data-languages="[&quot;shell&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -299,9 +299,6 @@
       <img src="images/logo-bbd7f659.png" class="logo" alt="" />
         <div class="lang-selector">
               <a href="#" data-language-name="shell">shell</a>
-              <a href="#" data-language-name="ruby">ruby</a>
-              <a href="#" data-language-name="python">python</a>
-              <a href="#" data-language-name="javascript">javascript</a>
         </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
@@ -348,6 +345,20 @@
           <li>
             <a href="#errors" class="toc-h1 toc-link" data-title="Errors">Errors</a>
           </li>
+          <li>
+            <a href="#models" class="toc-h1 toc-link" data-title="Models">Models</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#liveroom" class="toc-h2 toc-link" data-title="Liveroom">Liveroom</a>
+                  </li>
+                  <li>
+                    <a href="#questions" class="toc-h2 toc-link" data-title="Questions">Questions</a>
+                  </li>
+                  <li>
+                    <a href="#bets" class="toc-h2 toc-link" data-title="Bets">Bets</a>
+                  </li>
+              </ul>
+          </li>
       </ul>
         <ul class="toc-footer">
             <li><a href='#'>Sign Up for a Developer Key</a></li>
@@ -358,27 +369,31 @@
       <div class="dark-box"></div>
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
-<p>Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.</p>
+<p>Welcome to the Gamelive API!</p>
 
-<p>We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.</p>
+<p>This Documentation describes how to use our API to create awesome liverooms.</p>
 
-<p>This example API documentation page was created with <a href="https://github.com/slatedocs/slate">Slate</a>. Feel free to edit it and use it as a base for your own API&#39;s documentation.</p>
+<p>General concepts:
+A user needs to be registered in order to create a room. He then becomes admin of this room.
+The Room model describes the state of a public room, including its customization.
+The Liveroom model describes a room being live, i.e. a websocket is on to update the information (questions, timers...) to all the connected users.</p>
+
+<p>A user entering a room &quot;joins&quot; this room and is then connected to the Liveroom.</p>
+
+<p>An example is available is available here: dev.gamelive.gg</p>
+
+<p>This API documentation page was created with <a href="https://github.com/slatedocs/slate">Slate</a>. Feel free to fill in pull requests to update or correct this documentation.</p>
 <h1 id='authentication'>Authentication</h1>
+<p>Endpoints having the notice
+<aside class="notice">Requires auth token</aside>
+require an auth token to be passed as parameter.</p>
+
 <blockquote>
 <p>To authorize, use this code:</p>
 </blockquote>
-<div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="p">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell tab-shell"><code><span class="c"># With shell, you can just pass the correct header with each request</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code><span class="c"># With shell, you can just pass the correct header with each request</span>
 curl <span class="s2">"api_endpoint_here"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="kd">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">kittn</span><span class="dl">'</span><span class="p">);</span>
-
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="dl">'</span><span class="s1">meowmeowmeow</span><span class="dl">'</span><span class="p">);</span>
 </code></pre></div>
 <blockquote>
 <p>Make sure to replace <code>meowmeowmeow</code> with your API key.</p>
@@ -393,20 +408,8 @@ curl <span class="s2">"api_endpoint_here"</span> <span class="se">\</span>
 <aside class="notice">
 You must replace <code>meowmeowmeow</code> with your personal API key.
 </aside>
-<h1 id='kittens'>Kittens</h1><h2 id='get-all-kittens'>Get All Kittens</h2><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span>
-</code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="p">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="n">kittens</span><span class="p">.</span><span class="n">get</span><span class="p">()</span>
-</code></pre></div><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens"</span> <span class="se">\</span>
+<h1 id='kittens'>Kittens</h1><h2 id='get-all-kittens'>Get All Kittens</h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="kd">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">kittn</span><span class="dl">'</span><span class="p">);</span>
-
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="dl">'</span><span class="s1">meowmeowmeow</span><span class="dl">'</span><span class="p">);</span>
-<span class="kd">let</span> <span class="nx">kittens</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
 </code></pre></div>
 <blockquote>
 <p>The above command returns JSON structured like this:</p>
@@ -803,14 +806,249 @@ This error section is stored in a separate file in <code>includes/_errors.md</co
 <td>Service Unavailable -- We&#39;re temporarily offline for maintenance. Please try again later.</td>
 </tr>
 </tbody></table>
+<h1 id='models'>Models</h1><h2 id='liveroom'>Liveroom</h2>
+<p>This is the main object to create activations.
+An user is admin of the the rooms he created.
+A room a session, each sessions corresponding to a leaderboard and containing questions.</p>
+
+<blockquote>
+<p>Model:</p>
+</blockquote>
+<div class="highlight"><pre class="highlight go"><code><span class="k">type</span> <span class="n">Room</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Id</span>          <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span>   <span class="s">`json:"id" bson:"_id"`</span>
+    <span class="n">TwChannelId</span> <span class="kt">string</span>          <span class="s">`json:"twChannelId,omitempty" bson:"twChannelId,omitempty"`</span>
+    <span class="n">Name</span>        <span class="kt">string</span>          <span class="s">`json:"name" bson:"name"`</span>
+    <span class="n">ImgUrl</span>      <span class="kt">string</span>          <span class="s">`json:"imgUrl,omitempty" bson:"imgUrl,omitempty"`</span>
+    <span class="n">Description</span> <span class="kt">string</span>          <span class="s">`json:"description,omitempty" bson:"description,omitempty"`</span>
+    <span class="n">SubTitle</span>    <span class="kt">string</span>          <span class="s">`json:"subTitle,omitempty" bson:"subTitle,omitempty"`</span>
+    <span class="n">BannedIds</span>   <span class="p">[]</span><span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"bannedIds,omitempty" bson:"bannedIds,omitempty"`</span>
+    <span class="n">Admins</span>      <span class="p">[]</span><span class="n">AdminInfos</span>    <span class="s">`json:"admins,omitempty" bson:"admins,omitempty"`</span>
+    <span class="c">//Contains all the users that joined the room at one point</span>
+    <span class="n">JoinedUsers</span> <span class="p">[]</span><span class="n">users</span><span class="o">.</span><span class="n">UserInfo</span> <span class="s">`json:"joinedUsers,omitempty" bson:"joinedUsers,omitempty"`</span>
+
+    <span class="c">// Sessions are indexed with their ID</span>
+    <span class="n">Sessions</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="n">seasons</span><span class="o">.</span><span class="n">Season</span> <span class="s">`json:"sessions,omitempty" bson:"sessions,omitempty"`</span>
+    <span class="c">// TEMP OBJECTs</span>
+    <span class="c">//OldSessions []seasons.Season `json:"oldSessions,omitempty" bson:"oldSessions,omitempty"`</span>
+    <span class="c">//DEPRECATED, included into the Session object</span>
+    <span class="n">Questions</span> <span class="p">[]</span><span class="n">questions</span><span class="o">.</span><span class="n">Question</span> <span class="s">`json:"questions,omitempty" bson:"questions,omitempty"`</span>
+
+    <span class="n">Game</span>     <span class="kt">string</span>   <span class="s">`json:"game,omitempty" bson:"game,omitempty"`</span>
+    <span class="n">Language</span> <span class="kt">string</span>   <span class="s">`json:"language,omitempty" bson:"language,omitempty"`</span>
+    <span class="n">Hashtags</span> <span class="p">[]</span><span class="kt">string</span> <span class="s">`json:"hashtags,omitempty" bson:"hashtags,omitempty"`</span>
+    <span class="c">// a room can't be edited if it is deleted</span>
+    <span class="n">IsDeleted</span> <span class="kt">bool</span>   <span class="s">`json:"isDeleted" bson:"isDeleted"`</span>
+    <span class="n">Color</span>     <span class="kt">string</span> <span class="s">`json:"color,omitempty" bson:"color,omitempty"`</span>
+    <span class="n">IsPrivate</span> <span class="kt">bool</span>   <span class="s">`json:"isPrivate" bson:"isPrivate"`</span>
+    <span class="c">// a room can't be edited if it is test</span>
+    <span class="c">// a test room has automatics bets that are run every 90 sec</span>
+    <span class="n">IsTest</span>       <span class="kt">bool</span>   <span class="s">`json:"isTest" bson:"isTest"`</span>
+    <span class="n">IsPromoted</span>   <span class="kt">bool</span>   <span class="s">`json:"isPromoted" bson:"isPromoted"`</span>
+    <span class="n">StreamName</span>   <span class="kt">string</span> <span class="s">`json:"streamName,omitempty" bson:"streamName,omitempty"`</span>
+    <span class="n">ChatChannel</span>  <span class="kt">string</span> <span class="s">`json:"chatChannel,omitempty" bson:"chatChannel,omitempty"`</span>
+    <span class="n">QRCodeImgUrl</span> <span class="kt">string</span> <span class="s">`json:"qrCodeImgUrl,omitempty" bson:"qrCodeImgUrl,omitempty"`</span>
+    <span class="n">RoomUrl</span>      <span class="kt">string</span> <span class="s">`json:"roomUrl,omitempty" bson:"roomUrl,omitempty"`</span>
+    <span class="n">ShortId</span>      <span class="kt">string</span> <span class="s">`json:"shortId,omitempty" bson:"shortId,omitempty"`</span> <span class="c">// Unique code of 6 digits to join the room easily</span>
+    <span class="c">//ShowQRCodeImage bool            `json:"showQRCodeImage" bson:"showQRCodeImage"`</span>
+    <span class="n">BackgroundImage</span> <span class="kt">string</span>          <span class="s">`json:"backgroundImage" bson:"backgroundImage"`</span>
+    <span class="n">StreamedModules</span> <span class="n">StreamedModules</span> <span class="s">`json:"streamedModules,omitempty" bson:"streamedModules,omitempty"`</span>
+    <span class="c">//TODO : to change to array</span>
+    <span class="n">PromotionalImagesUrl</span> <span class="kt">string</span>             <span class="s">`json:"promotionalImagesUrl,omitempty" bson:"promotionalImagesUrl,omitempty"`</span>
+    <span class="n">TwitchCustom</span>         <span class="n">TwitchCustomStruct</span> <span class="s">`json:"twitchCustom,omitempty" bson:"twitchCustom,omitempty"`</span>
+<span class="p">}</span>
+
+<span class="k">type</span> <span class="n">AdminInfos</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">UserId</span> <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"userId,omitempty" bson:"userId,omitempty"`</span>
+    <span class="n">Name</span>   <span class="kt">string</span>        <span class="s">`json:"name,omitempty" bson:"name,omitempty"`</span>
+<span class="p">}</span>
+
+<span class="c">// An edulcored version of the Room struct to avoir too much traffic</span>
+<span class="k">type</span> <span class="n">RoomSummary</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Id</span>          <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"id,omitempty" bson:"_id,omitempty"`</span>
+    <span class="n">Name</span>        <span class="kt">string</span>        <span class="s">`json:"name,omitempty" bson:"name,omitempty"`</span>
+    <span class="n">ImgUrl</span>      <span class="kt">string</span>        <span class="s">`json:"imgUrl,omitempty" bson:"imgUrl,omitempty"`</span>
+    <span class="n">Description</span> <span class="kt">string</span>        <span class="s">`json:"description,omitempty" bson:"description,omitempty"`</span>
+    <span class="n">SubTitle</span>    <span class="kt">string</span>        <span class="s">`json:"subTitle,omitempty" bson:"subTitle,omitempty"`</span>
+    <span class="n">Admins</span>      <span class="p">[]</span><span class="n">AdminInfos</span>  <span class="s">`json:"admins,omitempty" bson:"admins,omitempty"`</span>
+    <span class="n">Language</span>    <span class="kt">string</span>        <span class="s">`json:"language,omitempty" bson:"language,omitempty"`</span>
+<span class="p">}</span>
+
+<span class="c">// liveRoom is the live pendant of the Room ; this object is sent to the clients through the websocket</span>
+<span class="k">type</span> <span class="n">liveRoom</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Room</span> <span class="o">*</span><span class="n">Room</span> <span class="s">`json:"room,omitempty" bson:"room,omitempty"`</span>
+    <span class="c">// HasActiveQuestion is set to true if a question is in the "OPEN" state</span>
+    <span class="c">// If HasActiveQuestion is true, a routine updating the room is running</span>
+    <span class="n">HasActiveQuestion</span> <span class="kt">bool</span> <span class="s">`json:"hasActiveQuestion"`</span>
+
+    <span class="c">// ConnectedClients is the map containing all the webscocket connections of the clients connected to the room</span>
+    <span class="n">ConnectedClients</span> <span class="p">[]</span><span class="o">*</span><span class="n">customWs</span> <span class="s">`json:"-" bson:"-"`</span>
+    <span class="c">// OperationExecuted: Can either be ["QuestionsManipulation", "ResetPoints", "AdminUpdate", "Ping"]</span>
+    <span class="n">OperationExecuted</span> <span class="kt">string</span> <span class="s">`json:"operationExecuted"`</span>
+    <span class="c">// UpdateTickerChannel is a chan used to keep track of the ticker goroutine that sends updates to all the clients regularily</span>
+    <span class="c">// and to end it eventually</span>
+    <span class="n">UpdateTickerChannel</span> <span class="k">chan</span> <span class="kt">bool</span> <span class="s">`json:"-" bson:"-"`</span>
+    <span class="c">// PingTickerChannel is a chan used for the ticker implementing the ping/pong control messages of the websocket</span>
+    <span class="n">PingTickerChannel</span> <span class="k">chan</span> <span class="kt">bool</span> <span class="s">`json:"-" bson:"-"`</span>
+<span class="p">}</span>
+
+<span class="c">// StreamedModules defines the list of modules that are streamed live</span>
+<span class="k">type</span> <span class="n">StreamedModules</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Leaderboard</span>     <span class="kt">bool</span> <span class="s">`json:"leaderboard"`</span>
+    <span class="n">Predictions</span>     <span class="kt">bool</span> <span class="s">`json:"predictions"`</span>
+    <span class="n">SmartDisplaying</span> <span class="kt">bool</span> <span class="s">`json:"smartDisplaying"`</span>
+    <span class="n">ShowPromoImages</span> <span class="kt">bool</span> <span class="s">`json:"showPromoImages"`</span>
+    <span class="n">ShowQRCodeImage</span> <span class="kt">bool</span> <span class="s">`json:"showQRCodeImage"`</span>
+    <span class="n">ShowCustomUrl</span>   <span class="kt">bool</span> <span class="s">`json:"showCustomUrl"`</span>
+<span class="p">}</span>
+
+<span class="c">// TwitchCustom contains all the customizable things in the twitch extension</span>
+<span class="k">type</span> <span class="n">TwitchCustomStruct</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">HeaderImage</span>    <span class="kt">string</span> <span class="s">`json:"headerImage"`</span>
+    <span class="n">HeaderImageUrl</span> <span class="kt">string</span> <span class="s">`json:"headerImageUrl"`</span>
+    <span class="n">TwitterUrl</span>     <span class="kt">string</span> <span class="s">`json:"twitterUrl"`</span>
+    <span class="n">FacebookUrl</span>    <span class="kt">string</span> <span class="s">`json:"facebookUrl"`</span>
+    <span class="n">InstagramUrl</span>   <span class="kt">string</span> <span class="s">`json:"instagramUrl"`</span>
+<span class="p">}</span>
+
+</code></pre></div><h2 id='questions'>Questions</h2>
+<p>A question is used in a Room and provides contextual information on a BetUnit: corresponding match Id, answers given by the users...</p>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"/liveRoom/join"</span> <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
+</code></pre></div>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<div class="highlight"><pre class="highlight go"><code><span class="k">type</span> <span class="n">Question</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Id</span>      <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"id" bson:"_id"`</span>
+    <span class="n">RoomId</span>  <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"roomId,omitempty" bson:"roomId,omitempty"`</span>
+    <span class="n">MatchId</span> <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"matchId,omitempty" bson:"matchId,omitempty"`</span>
+    <span class="c">// SessionId is used to avoid erasing multiple similar bets for a user</span>
+    <span class="n">SessionId</span> <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"sessionId,omitempty" bson:"sessionId,omitempty"`</span>
+
+    <span class="n">Status</span>                 <span class="kt">string</span>         <span class="s">`json:"status,omitempty" bson:"status,omitempty"`</span>
+    <span class="n">AnswersCount</span>           <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span> <span class="s">`json:"answersCount,omitempty" bson:"answersCount,omitempty"`</span>
+    <span class="n">AnswersCountPercentage</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span> <span class="s">`json:"answersCountPercentage,omitempty" bson:"answersCountPercentage,omitempty"`</span>
+    <span class="n">Bet</span>                    <span class="n">bets</span><span class="o">.</span><span class="n">BetUnit</span>   <span class="s">`json:"bet" bson:"bet"`</span>
+    <span class="c">// Can either be [{game}-TRIVIA, {game}-PRONO]</span>
+    <span class="n">QuestionType</span>     <span class="kt">string</span>    <span class="s">`json:"questionType" bson:"questionType"`</span>
+    <span class="n">QuestionDuration</span> <span class="kt">int</span>       <span class="s">`json:"questionDuration" bson:"questionDuration"`</span>
+    <span class="n">TimeEnd</span>          <span class="n">time</span><span class="o">.</span><span class="n">Time</span> <span class="s">`json:"timeEnd" bson:"timeEnd"`</span>
+    <span class="c">// Display options used individually by the liveRooms</span>
+    <span class="n">DisplayOptions</span> <span class="n">DisplayOptions</span> <span class="s">`json:"displayOptions" bson:"displayOptions"`</span>
+    <span class="c">//used only for evry2</span>
+    <span class="c">// BreakDuration       int            `json:"breakDuration" bson:"breakDuration"`</span>
+
+<span class="p">}</span>
+
+<span class="k">type</span> <span class="n">DisplayOptions</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">ShowAnswerCount</span> <span class="kt">bool</span> <span class="s">`json:"showAnswerCount,omitempty" bson:"showAnswerCount,omitempty"`</span>
+    <span class="n">ShowPercentages</span> <span class="kt">bool</span> <span class="s">`json:"showPercentages,omitempty" bson:"showPercentages,omitempty"`</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This endpoint allows a user to join a specific Liveroom.</p>
+<h3 id='http-request'>HTTP Request</h3>
+<p><code>GET /liveRoom/join</code></p>
+<h3 id='url-parameters'>URL Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>liveRoomId</td>
+<td>The ID of the liveroom to join</td>
+</tr>
+</tbody></table>
+<h2 id='bets'>Bets</h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"/liveRoom/summary"</span> <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
+</code></pre></div>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<div class="highlight"><pre class="highlight go"><code><span class="c">/**
+*   Bet Ref typo :
+*   - bo5   :   Score for both team for a Bo5 match
+*   - tow1  :   1rst tower
+*   - fbl   :   1rst blood
+*   - mid15 :   Best midlaner at 15'
+*   - inh1  :   1rst inhibitor
+**/</span>
+<span class="c">//swagger:model</span>
+<span class="k">type</span> <span class="n">BetUnit</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Id</span>             <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"id" bson:"_id,omitempty"`</span>
+    <span class="n">MatchId</span>        <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"matchId" bson:"matchId,omitempty"`</span>
+    <span class="n">GameNumber</span>     <span class="kt">int</span>           <span class="s">`json:"gameNumber" bson:"gameNumber"`</span>
+    <span class="n">Ref</span>            <span class="kt">string</span>        <span class="s">`json:"ref" bson:"ref"`</span>
+    <span class="n">MatchDateTime</span>  <span class="n">time</span><span class="o">.</span><span class="n">Time</span>     <span class="s">`json:"matchDateTime" bson:"matchDateTime"`</span>
+    <span class="n">Accurate</span>       <span class="kt">bool</span>          <span class="s">`json:"accurate" bson:"accurate"`</span>
+    <span class="n">Aknowledged</span>    <span class="kt">bool</span>          <span class="s">`json:"aknowledged" bson:"aknowledged"`</span>                 <span class="c">// true if the points for this bet have been counted</span>
+    <span class="n">Timestamp</span>      <span class="n">time</span><span class="o">.</span><span class="n">Time</span>     <span class="s">`json:"timestamp,omitempty" bson:"timestamp,omitempty"`</span> <span class="c">// Time when user's bet is saved in Db / IN gamelive : time where the bet was created</span>
+    <span class="n">EventTimestamp</span> <span class="kt">int64</span>         <span class="s">`json:"-" bson:"eventTimestamp,omitempty"`</span>              <span class="c">// Time when event happend (firstblood for a FBL bet), in millisecond after the match begun</span>
+    <span class="n">Valid</span>          <span class="kt">bool</span>          <span class="s">`json:"valid" bson:"valid"`</span>
+    <span class="n">InvalidReason</span>  <span class="kt">string</span>        <span class="s">`json:"invalidReason,omitempty" bson:"invalidReason,omitempty"`</span>
+    <span class="n">BasePoints</span>     <span class="kt">int</span>           <span class="s">`json:"basePoints" bson:"basePoints"`</span>
+    <span class="n">PointsGains</span>    <span class="kt">int</span>           <span class="s">`json:"pointsGains,omitempty" bson:"pointsGains,omitempty"`</span>
+    <span class="n">Multipliers</span>    <span class="k">struct</span> <span class="p">{</span>
+        <span class="n">Odd</span>     <span class="kt">float32</span> <span class="s">`json:"odd" bson:"odd"`</span>
+        <span class="n">Perfect</span> <span class="kt">float32</span> <span class="s">`json:"perfect" bson:"perfect"`</span>
+    <span class="p">}</span> <span class="s">`json:"multipliers" bson:"multipliers"`</span>
+    <span class="n">LiveBetExpire</span> <span class="n">time</span><span class="o">.</span><span class="n">Time</span> <span class="s">`json:"liveBetDuration" bson:"liveBetDuration"`</span>
+    <span class="c">//in:body</span>
+    <span class="n">Score</span> <span class="k">struct</span> <span class="p">{</span>
+        <span class="n">BlueTeamId</span>    <span class="kt">string</span> <span class="s">`json:"blueTeamId,omitempty" bson:"blueTeamId,omitempty"`</span>
+        <span class="n">BlueTeamScore</span> <span class="kt">int</span>    <span class="s">`json:"blueTeamScore" bson:"blueTeamScore"`</span>
+        <span class="n">RedTeamId</span>     <span class="kt">string</span> <span class="s">`json:"redTeamId,omitempty" bson:"redTeamId,omitempty"`</span>
+        <span class="n">RedTeamScore</span>  <span class="kt">int</span>    <span class="s">`json:"redTeamScore" bson:"redTeamScore"`</span>
+        <span class="n">Roster</span>        <span class="kt">string</span> <span class="s">`json:"roster,omitempty" bson:"roster,omitempty"`</span>
+        <span class="n">CustomAnswer</span>  <span class="kt">string</span> <span class="s">`json:"customAnswer,omitempty" bson:"customAnswer,omitempty"`</span>
+    <span class="p">}</span> <span class="s">`json:"score,omitempty" bson:"score"`</span>
+    <span class="n">AchievementsList</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kt">string</span> <span class="s">`json:"-" bson:"achievementsList"`</span>
+    <span class="n">Rosters</span>          <span class="p">[]</span><span class="n">BetRosters</span>        <span class="s">`json:"rosters" bson:"rosters"`</span>
+    <span class="n">Seasons</span>          <span class="p">[]</span><span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span>     <span class="s">`json:"seasons" bson:"seasons"`</span>
+
+    <span class="c">//Gamelive specific fields</span>
+    <span class="n">SessionId</span>     <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span>     <span class="s">`json:"sessionId" bson:"sessionId,omitempty"`</span>
+    <span class="n">QuestionId</span>    <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span>     <span class="s">`json:"questionId" bson:"questionId,omitempty"`</span>
+    <span class="n">CreatorId</span>     <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span>     <span class="s">`json:"creatorId" bson:"creatorId,omitempty"`</span>
+    <span class="n">RoomId</span>        <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span>     <span class="s">`json:"roomId" bson:"roomId,omitempty"`</span> <span class="c">// Is used for bets that are dedicated to only one room</span>
+    <span class="n">Question</span>      <span class="kt">string</span>            <span class="s">`json:"question,omitempty" bson:"question,omitempty"`</span>
+    <span class="n">Answers</span>       <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span> <span class="s">`json:"answers,omitempty" bson:"answers,omitempty"`</span>
+    <span class="n">CorrectAnswer</span> <span class="kt">string</span>            <span class="s">`json:"correctAnswer,omitempty" bson:"correctAnswer,omitempty"`</span>
+    <span class="n">ImgUrl</span>        <span class="kt">string</span>            <span class="s">`json:"imgUrl,omitempty" bson:"imgUrl,omitempty"`</span>
+    <span class="n">Language</span>      <span class="kt">string</span>            <span class="s">`json:"language,omitempty" bson:"language,omitempty"`</span>
+    <span class="n">IsReusable</span>    <span class="kt">bool</span>              <span class="s">`json:"isReusable" bson:"isReusable"`</span> <span class="c">// Set to true if can be reused again in this particular room</span>
+    <span class="n">IsGlobal</span>      <span class="kt">bool</span>              <span class="s">`json:"isGlobal" bson:"isGlobal"`</span>     <span class="c">// Set to true if it's available to all rooms</span>
+
+<span class="p">}</span>
+
+<span class="k">type</span> <span class="n">BetRosters</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">Id</span>        <span class="n">bson</span><span class="o">.</span><span class="n">ObjectId</span> <span class="s">`json:"id" bson:"id,omitempty"`</span>
+    <span class="n">Imageurl</span>  <span class="kt">string</span>        <span class="s">`json:"imageUrl" bson:"imageUrl"`</span>
+    <span class="n">Shortname</span> <span class="kt">string</span>        <span class="s">`json:"shortName" bson:"shortName"`</span>
+<span class="p">}</span>
+
+</code></pre></div>
+<p>This endpoint return the summaries of Liverooms which ids are passed in the body of the request</p>
+<h3 id='http-request-2'>HTTP Request</h3>
+<p><code>GET /liveRoom/join</code></p>
+<h3 id='url-parameters-2'>URL Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>liveRoomIds</td>
+<td>(optional) The ID of the liverooms</td>
+</tr>
+</tbody></table>
 
       </div>
       <div class="dark-box">
           <div class="lang-selector">
                 <a href="#" data-language-name="shell">shell</a>
-                <a href="#" data-language-name="ruby">ruby</a>
-                <a href="#" data-language-name="python">python</a>
-                <a href="#" data-language-name="javascript">javascript</a>
           </div>
       </div>
     </div>
